@@ -1,0 +1,31 @@
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.area {
+  margin-top: 20px;
+  font-size: 2rem;
+  padding: 15px;
+}
+
+.wrapper {
+  margin-top: 30px;
+}
+
+.container-row {
+  display: flex;
+}
+
+.key{
+  min-width: 50px;
+  height: 50px;
+  margin: 3px;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.space {
+  width: 275px;
+}

@@ -1,0 +1,29 @@
+{
+  "extends": "airbnb-base",
+  "env": {
+    "node": true,
+    "es2020": true
+  },
+  "rules": {
+    "semi": 0,    
+    "eol-last": 0,    
+    "max-len": 0,
+    "guard-for-in": 0,
+    "object-shorthand": 0,
+    "no-restricted-syntax": 0,
+    "prefer-template": 0,
+    "import/no-amd": 0,
+    "space-before-function-parent": 0,
+    "import/no-unresolved": 0,
+    "import/extensions": 0,
+    "import/order": 0,
+    "comma-dangle": 0,
+    "no-unused-expressions": 0,
+    "no-plusplus": 0
+  },
+  "globals": {
+    "browser": false,
+    "window": true,
+    "document": true
+  }
+}
