@@ -10,6 +10,11 @@ import {
 import { change } from './changeButton.js';
 import { Key } from './class.js';
 
+const TITLE = document.createElement('h1');
+document.body.appendChild(TITLE);
+TITLE.textContent = 'RSS Виртуальная клавиатура';
+TITLE.classList.add('title');
+
 // создание текстового поля
 const AREA = document.createElement('textarea');
 AREA.rows = 6;
@@ -94,8 +99,18 @@ CAPS.addEventListener('click', () => {
   CAPS.classList.toggle('active');
 });
 
-CAPS.addEventListener('keydown', (e) => {
+document.addEventListener('keydown', (e) => {
   if (e.code === 'CapsLock') {
     CAPS.classList.toggle('active');
   }
 });
+
+// Сброс стилей для таб и альт и вставка символов в пробел
+window.onkeydown = (e) => {
+  if (e.code === 'Tab') {
+    e.preventDefault();
+    AREA.value += '    ';
+  } else if (e.code === 'AltLeft' || e.code === 'AltRight') {
+    e.preventDefault();
+  }
+}

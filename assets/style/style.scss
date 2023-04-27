@@ -4,6 +4,10 @@ body {
   justify-content: center;
   align-items: center;
 }
+.title{
+  color: #333333;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3), -2px -2px 4px rgba(255, 255, 255, 0.3);
+}
 .area {
   margin-top: 20px;
   font-size: 2rem;
@@ -12,10 +16,11 @@ body {
 
 .wrapper {
   margin-top: 30px;
+  background-color: rgba(128, 128, 128, 0.214);
 }
 
 .container-row {
-  display: flex;
+  display: flex; 
 }
 
 .key{
@@ -24,13 +29,42 @@ body {
   margin: 3px;
   font-size: 1.5rem;
   cursor: pointer;
-}
-
-.space {
-  width: 275px;  
+  user-select: none;
 }
 
 .active {
   background-color: rgba(169, 168, 168, 0.885);
   border-radius: 20%;
+}
+
+.space {
+  width: 384px;  
+}
+
+.shiftright {
+  width: 120px;
+}
+
+.shiftleft {
+  width: 120px;
+}
+
+.enter {
+  width: 100px;
+}
+
+.delete {
+  width: 65px;
+}
+
+.enter {
+  width: 110px;
+}
+
+.controlleft {
+  width: 60px;
+}
+
+.controlright {
+  width: 60px;
 }
