@@ -29,4 +29,9 @@ body {
 
 .space {
   width: 275px;
+}
+
+.active {
+  background-color: rgba(169, 168, 168, 0.885);
+  border-radius: 20%;
 }/*# sourceMappingURL=style.css.map */

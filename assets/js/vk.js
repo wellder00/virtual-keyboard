@@ -5,8 +5,12 @@ import {
   GENERATOR_ARR,
   GENERATOR_OBJ,
   GEN_KEYS_LENGTH,
+  DOBLE_ARR,
 } from './arr.js';
+import { change } from './changeButton.js';
+import { Key } from './class.js';
 
+// создание текстового поля
 const AREA = document.createElement('textarea');
 AREA.rows = 6;
 AREA.cols = 50;
@@ -14,33 +18,27 @@ AREA.classList.add('area');
 document.body.appendChild(AREA);
 AREA.focus();
 
+// создание блока для кнопок
 const KEYBOARD_BLOCK = document.createElement('section');
 KEYBOARD_BLOCK.classList.add('wrapper');
 document.body.appendChild(KEYBOARD_BLOCK);
 
-class Key {
-  constructor(englishLetters, russianLetters, keyCode) {
-    // eslint-disable-next-line no-underscore-dangle
-    this._className = `el-${englishLetters}`;
-    this.englishLetters = englishLetters;
-    this.enUpper = /[a-z]/.test(this.englishLetters) ? this.englishLetters.toUpperCase() : this.englishLetters;
-    this.russianLetters = russianLetters;
-    this.ruUpper = /[а-яё]/.test(this.russianLetters) ? this.russianLetters.toUpperCase() : this.russianLetters;
-    this.keyCode = keyCode;
-  }
-}
-
+// состояния
 const STATUS = {
   ShiftLeft: false,
   ShiftRight: false,
   ControlLeft: false,
+  CapsLock: false
 }
 
+// блок событий кнопок
 document.addEventListener('keydown', (e) => {
   if (e.code === 'ShiftLeft') STATUS.ShiftLeft = true
   if (e.code === 'ShiftRight') STATUS.ShiftRight = true
   if (e.code === 'ControlLeft') STATUS.ControlLeft = true
-  // console.log(STATUS);
+  if (e.code === 'CapsLock') {
+    STATUS.CapsLock === true ? STATUS.CapsLock = false : STATUS.CapsLock = true
+  }
 })
 
 document.addEventListener('keyup', (e) => {
@@ -49,8 +47,7 @@ document.addEventListener('keyup', (e) => {
   if (e.code === 'ControlLeft') STATUS.ControlLeft = false
 })
 
-const DOBLE_ARR = Array.from({ length: 5 }, () => []);
-
+// генерация кнопок и присвоение класcов и id
 for (let i = 0; i < EN_LAYOUT.length; i++) {
   const keys = EN_LAYOUT[i].map((englishLetters, j) => {
     const russianLetters = RU_LAYOUT[i][j];
@@ -71,18 +68,34 @@ for (let i = 0; i < EN_LAYOUT.length; i++) {
   });
 }
 
-GENERATOR_ARR
-let currentStatus
-function change() {
-  const buttonA = document.querySelector('.keya')
-  buttonA.textContent.toLocaleLowerCase() === 'a' ? currentStatus = 'russianLetters' : currentStatus = 'englishLetters'
-  GENERATOR_ARR.forEach((val, i) => {
-    val.forEach((el, index) => {
-      DOBLE_ARR[i][index].textContent = el[currentStatus]
-    })
-  })
-}
-
+// переключение языка
+// срабатывает при активном КАПСЕ
 document.addEventListener('keydown', () => {
   if (STATUS.ShiftLeft === true && STATUS.ControlLeft === true) change()
 })
+
+// дабавляю класс при нажатии
+document.addEventListener('keydown', (e) => {
+  if (e.code !== 'CapsLock') {
+    document.querySelector(`.${e.code.toLowerCase()}`).classList.add('active')
+  }
+})
+
+document.addEventListener('keyup', (e) => {
+  if (e.code !== 'CapsLock') {
+    document.querySelector(`.${e.code.toLowerCase()}`).classList.remove('active')
+  }
+})
+
+// стили для КАПСА, не работает нажатие
+const CAPS = document.getElementById('CapsLock');
+
+CAPS.addEventListener('click', () => {
+  CAPS.classList.toggle('active');
+});
+
+CAPS.addEventListener('keydown', (e) => {
+  if (e.code === 'CapsLock') {
+    CAPS.classList.toggle('active');
+  }
+});
