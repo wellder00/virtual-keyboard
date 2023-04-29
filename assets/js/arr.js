@@ -39,6 +39,7 @@ export const SHIFT_EN = [
   ['Shift', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', '<', '>', '?', '⇑', 'Shift'],
   ['Ctrl', 'Win', 'Alt', ' ', 'Alt', '⇐', '⇓', '⇒', 'Ctrl']
 ]
+
 export const GENERATOR_ARR = Array.from({ length: 5 }, () => []);
 export const DOBLE_ARR = Array.from({ length: 5 }, () => []);
 export const GENERATOR_OBJ = {};

@@ -72,22 +72,12 @@ document.addEventListener('keydown', (e) => {
   if (e.code === 'ShiftRight') STATUS.ShiftRight = true
   if (e.code === 'ControlLeft') STATUS.ControlLeft = true
   if (e.code === 'AltLeft') STATUS.AltLeft = true
-  if (e.code === 'CapsLock') {
-    STATUS.CapsLock === true ? STATUS.CapsLock = false : STATUS.CapsLock = true
-  }
 })
 document.addEventListener('keyup', (e) => {
   if (e.code === 'ShiftLeft') STATUS.ShiftLeft = false
   if (e.code === 'ShiftRight') STATUS.ShiftRight = false
   if (e.code === 'ControlLeft') STATUS.ControlLeft = false
   if (e.code === 'AltLeft') STATUS.AltLeft = false
-})
-
-// блок состояний кнопок мышь
-document.addEventListener('click', (e) => {
-  if (e.target.id === 'CapsLock') {
-    STATUS.CapsLock === true ? STATUS.CapsLock = false : STATUS.CapsLock = true
-  }
 })
 
 document.addEventListener('mousedown', (e) => {
@@ -157,50 +147,87 @@ window.onkeydown = (e) => {
 // Нажатие шифта
 let shiftChange
 function activeShift() {
-  STATUS.language === 'russianLetters'
-    ? (shiftChange = 'shiftRu')
-    : (shiftChange = 'shiftEn');
-  GENERATOR_ARR.forEach((val, i) => {
-    val.forEach((el, index) => {
-      DOBLE_ARR[i][index].textContent = el[shiftChange];
+  if (STATUS.CapsLock === false) {
+    STATUS.language === 'russianLetters'
+      ? (shiftChange = 'shiftRu')
+      : (shiftChange = 'shiftEn');
+    GENERATOR_ARR.forEach((val, i) => {
+      val.forEach((el, index) => {
+        DOBLE_ARR[i][index].textContent = el[shiftChange];
+      });
     });
-  });
+  } else {
+    STATUS.language === 'russianLetters'
+      ? (shiftChange = 'shiftRu')
+      : (shiftChange = 'shiftEn');
+    GENERATOR_ARR.forEach((val, i) => {
+      val.forEach((el, index) => {
+        DOBLE_ARR[i][index].textContent = el[shiftChange]
+        if (/^[A-Z]$/i.test(DOBLE_ARR[i][index].textContent) || /^[\u0410-\u044F\u0401]$/i.test(DOBLE_ARR[i][index].textContent)) {
+          DOBLE_ARR[i][index].textContent = DOBLE_ARR[i][index].textContent.toLowerCase()
+        }
+      });
+    });
+  }
 }
 
-GENERATOR_ARR.forEach((el) => {
- console.log(el)
-})
-
+let shiftChangeS
 function noActiveShift() {
-  STATUS.language === 'russianLetters'
-    ? (STATUS.language = 'russianLetters')
-    : (STATUS.language = 'englishLetters');
-  GENERATOR_ARR.forEach((val, i) => {
-    val.forEach((el, index) => {
-      DOBLE_ARR[i][index].textContent = el[STATUS.language];
+  if (STATUS.CapsLock === false) {
+    STATUS.language === 'russianLetters'
+      ? (STATUS.language = 'russianLetters')
+      : (STATUS.language = 'englishLetters');
+    GENERATOR_ARR.forEach((val, i) => {
+      val.forEach((el, index) => {
+        DOBLE_ARR[i][index].textContent = el[STATUS.language];
+      });
     });
-  });
+  } else {
+    STATUS.language === 'russianLetters'
+      ? (shiftChangeS = 'ruUpper')
+      : (shiftChangeS = 'enUpper');
+    GENERATOR_ARR.forEach((val, i) => {
+      val.forEach((el, index) => {
+        DOBLE_ARR[i][index].textContent = el[shiftChangeS];
+      });
+    });
+  }
 }
 
 // Нажатие КАПСА
 let сapsChange
 function activeCaps() {
-  STATUS.language === 'russianLetters' && STATUS.CapsLock === true
-    ? (сapsChange = 'ruUpper')
-    : (сapsChange = 'enUpper');
-  GENERATOR_ARR.forEach((val, i) => {
-    val.forEach((el, index) => {
-      DOBLE_ARR[i][index].textContent = el[сapsChange];
+  STATUS.CapsLock === true ? STATUS.CapsLock = false : STATUS.CapsLock = true
+  // console.log(STATUS.CapsLock)
+  if (STATUS.CapsLock === true) {
+    STATUS.language === 'russianLetters'
+      ? (сapsChange = 'ruUpper')
+      : (сapsChange = 'enUpper');
+    document.querySelector('#CapsLock').classList.add('active')
+    GENERATOR_ARR.forEach((val, i) => {
+      val.forEach((el, index) => {
+        DOBLE_ARR[i][index].textContent = el[сapsChange];
+      });
     });
-  });
+  } else {
+    document.querySelector('#CapsLock').classList.remove('active')
+    STATUS.language === 'russianLetters'
+      ? (STATUS.language = 'russianLetters')
+      : (STATUS.language = 'englishLetters');
+    GENERATOR_ARR.forEach((val, i) => {
+      val.forEach((el, index) => {
+        DOBLE_ARR[i][index].textContent = el[STATUS.language];
+      });
+    });
+  }
 }
 
 // верхий регистр при перезагрузке страницы
-function startCaps() {
-  if (STATUS.CapsLock === true) activeCaps()
-  else noActiveShift()
-}
-startCaps()
+// function startCaps() {
+//   if (STATUS.CapsLock === true) activeCaps()
+//   else noActiveShift()
+// }
+// startCaps()
 
 // переключение языка и отслеживание шифта
 document.addEventListener('keydown', (e) => {
@@ -212,7 +239,7 @@ document.addEventListener('keydown', (e) => {
 
 document.addEventListener('keydown', (e) => {
   if (ALL_CODE.some((el) => el.includes(e.code))) {
-    if (STATUS.CapsLock === true) activeCaps()
+    if (e.code === 'CapsLock') activeCaps()
   }
 })
 
@@ -222,7 +249,7 @@ document.addEventListener('keyup', (e) => {
   }
 })
 
-// Ввод склавиатуры
+// Ввод с склавиатуры
 document.addEventListener('keydown', (e) => {
   if (ALL_CODE.some((el) => el.includes(e.code))) {
     e.preventDefault()
@@ -245,8 +272,15 @@ document.addEventListener('keydown', (e) => {
       AREA.setSelectionRange(STATUS.cursor, STATUS.cursor)
       AREA.focus()
     }
+    if (e.code === 'Tab') {
+      const tab = '    '
+      areaValueNew = `${AREA_VALUE_OLD.slice(0, STATUS.cursor)}${tab}${AREA_VALUE_OLD.slice(STATUS.cursor)}`
+      AREA.value = areaValueNew
+      STATUS.cursor
+      AREA.setSelectionRange(STATUS.cursor, STATUS.cursor)
+      AREA.focus()
+    }
     if (e.code === 'Backspace') {
-      console.log(e.code)
       if (STATUS.cursor !== 0) {
         areaValueNew = `${AREA_VALUE_OLD.slice(0, STATUS.cursor - 1)}${AREA_VALUE_OLD.slice(STATUS.cursor)}`
       }
@@ -256,20 +290,20 @@ document.addEventListener('keydown', (e) => {
       AREA.focus()
     }
     if (e.code === 'Delete') {
-      console.log(e.code)
       areaValueNew = `${AREA_VALUE_OLD.slice(0, STATUS.cursor)}${AREA_VALUE_OLD.slice(STATUS.cursor + 1)}`
       AREA.value = areaValueNew
       STATUS.cursor
       AREA.setSelectionRange(STATUS.cursor, STATUS.cursor)
       AREA.focus()
     }
-}
+  }
 })
 
+// Ввод мышью
 document.addEventListener('click', (e) => {
   STATUS.cursor = AREA.selectionStart
   const AREA_VALUE_OLD = AREA.value
-  let areaValueNew;
+  let areaValueNew = '';
   let keySymbol;
   if (e.target.id && e.target.classList.contains('key')) {
     keySymbol = document.querySelector(`.${e.target.id.toLowerCase()}`).textContent
@@ -292,7 +326,23 @@ document.addEventListener('click', (e) => {
       const tab = '    '
       areaValueNew = `${AREA_VALUE_OLD.slice(0, STATUS.cursor)}${tab}${AREA_VALUE_OLD.slice(STATUS.cursor)}`
       AREA.value = areaValueNew
-      STATUS.cursor++
+      STATUS.cursor
+      AREA.setSelectionRange(STATUS.cursor, STATUS.cursor)
+      AREA.focus()
+    }
+    if (e.target.id === 'Backspace') {
+      if (STATUS.cursor !== 0) {
+        areaValueNew = `${AREA_VALUE_OLD.slice(0, STATUS.cursor - 1)}${AREA_VALUE_OLD.slice(STATUS.cursor)}`
+      }
+      AREA.value = areaValueNew
+      STATUS.cursor--
+      AREA.setSelectionRange(STATUS.cursor, STATUS.cursor)
+      AREA.focus()
+    }
+    if (e.target.id === 'Delete') {
+      areaValueNew = `${AREA_VALUE_OLD.slice(0, STATUS.cursor)}${AREA_VALUE_OLD.slice(STATUS.cursor + 1)}`
+      AREA.value = areaValueNew
+      STATUS.cursor
       AREA.setSelectionRange(STATUS.cursor, STATUS.cursor)
       AREA.focus()
     }
@@ -300,13 +350,18 @@ document.addEventListener('click', (e) => {
 })
 
 document.addEventListener('mousedown', () => {
-  if (STATUS.AltLeft === true && STATUS.ControlLeft === true) changeFlag(); change()
   if (STATUS.ShiftLeft === true || STATUS.ShiftRight === true) activeShift()
-  if (STATUS.CapsLock === true) activeCaps()
 })
 
 document.addEventListener('mouseup', (e) => {
   if (e.target.id === 'ShiftLeft' || e.target.id === 'ShiftRight') {
     if (STATUS.ShiftLeft === false || STATUS.ShiftRight === false) noActiveShift()
+  }
+})
+
+// блок состояний кнопок мышь
+document.addEventListener('click', (e) => {
+  if (e.target.id === 'CapsLock') {
+    activeCaps()
   }
 })

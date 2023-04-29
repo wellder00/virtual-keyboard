@@ -8,10 +8,6 @@ export function changeFlag() {
 }
 
 export function change() {
-  if (STATUS.CapsLock === true) {
-    document.querySelector('#CapsLock').classList.add('active')
-  } else { document.querySelector('#CapsLock').classList.remove('active') }
-
   GENERATOR_ARR.forEach((val, i) => {
     val.forEach((el, index) => {
       DOBLE_ARR[i][index].textContent = el[STATUS.language];
