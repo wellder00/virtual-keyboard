@@ -21,11 +21,13 @@
     "no-unused-expressions": 0,
     "no-plusplus": 0,
     "no-underscore-dangle": 0,
-    "import/prefer-default-export": 0
+    "import/prefer-default-export": 0,
+    "import/no-cycle": 0
   },
   "globals": {
     "browser": false,
     "window": true,
-    "document": true
+    "document": true,
+    "localStorage": true
   }
 }

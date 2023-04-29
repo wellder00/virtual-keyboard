@@ -6,13 +6,15 @@ import {
   GENERATOR_OBJ,
   GEN_KEYS_LENGTH,
   DOBLE_ARR,
+  FUNCTION_SYMBOL
 } from './arr.js';
-import { change } from './changeButton.js';
+import { change, changeFlag } from './changeButton.js';
 import { Key } from './class.js';
 
+// заголовок
 const TITLE = document.createElement('h1');
 document.body.appendChild(TITLE);
-TITLE.textContent = 'RSS Виртуальная клавиатура';
+TITLE.textContent = 'RSS VIRTUAL KEYBOARD';
 TITLE.classList.add('title');
 
 // создание текстового поля
@@ -28,28 +30,55 @@ const KEYBOARD_BLOCK = document.createElement('section');
 KEYBOARD_BLOCK.classList.add('wrapper');
 document.body.appendChild(KEYBOARD_BLOCK);
 
+// описание
+const DESCRIPTION1 = document.createElement('h2');
+KEYBOARD_BLOCK.after(DESCRIPTION1);
+DESCRIPTION1.textContent = 'The keyboard was created in the Windows operating system';
+DESCRIPTION1.classList.add('title');
+const DESCRIPTION2 = document.createElement('h2');
+DESCRIPTION1.after(DESCRIPTION2);
+DESCRIPTION2.textContent = 'To switch the language combination: left ctrl + alt';
+DESCRIPTION2.classList.add('title');
+
 // состояния
-const STATUS = {
+export const STATUS = {
+  language: 'russianLetters',
   ShiftLeft: false,
   ShiftRight: false,
   ControlLeft: false,
-  CapsLock: false
+  CapsLock: false,
+  AltLeft: false,
+  cursor: 0
 }
 
-// блок событий кнопок
+// eslint-disable-next-line no-undef
+if (localStorage.getItem('capsLock')) {
+  STATUS.CapsLock = JSON.parse(localStorage.getItem('capsLock'))
+}
+window.onbeforeunload = () => {
+  localStorage.setItem('capsLock', STATUS.CapsLock)
+  localStorage.setItem('language', STATUS.language)
+}
+
+if (localStorage.getItem('language')) {
+  STATUS.language = localStorage.getItem('language')
+}
+
+// блок состояний кнопок
 document.addEventListener('keydown', (e) => {
   if (e.code === 'ShiftLeft') STATUS.ShiftLeft = true
   if (e.code === 'ShiftRight') STATUS.ShiftRight = true
   if (e.code === 'ControlLeft') STATUS.ControlLeft = true
+  if (e.code === 'AltLeft') STATUS.AltLeft = true
   if (e.code === 'CapsLock') {
     STATUS.CapsLock === true ? STATUS.CapsLock = false : STATUS.CapsLock = true
   }
 })
-
 document.addEventListener('keyup', (e) => {
   if (e.code === 'ShiftLeft') STATUS.ShiftLeft = false
   if (e.code === 'ShiftRight') STATUS.ShiftRight = false
   if (e.code === 'ControlLeft') STATUS.ControlLeft = false
+  if (e.code === 'AltLeft') STATUS.AltLeft = false
 })
 
 // генерация кнопок и присвоение класcов и id
@@ -73,13 +102,10 @@ for (let i = 0; i < EN_LAYOUT.length; i++) {
   });
 }
 
-// переключение языка
-// срабатывает при активном КАПСЕ
-document.addEventListener('keydown', () => {
-  if (STATUS.ShiftLeft === true && STATUS.ControlLeft === true) change()
-})
+// запись смены языка
+change()
 
-// дабавляю класс при нажатии
+// дабавление классов при нажатии клавиш
 document.addEventListener('keydown', (e) => {
   if (e.code !== 'CapsLock') {
     document.querySelector(`.${e.code.toLowerCase()}`).classList.add('active')
@@ -92,19 +118,6 @@ document.addEventListener('keyup', (e) => {
   }
 })
 
-// стили для КАПСА, не работает нажатие
-const CAPS = document.getElementById('CapsLock');
-
-CAPS.addEventListener('click', () => {
-  CAPS.classList.toggle('active');
-});
-
-document.addEventListener('keydown', (e) => {
-  if (e.code === 'CapsLock') {
-    CAPS.classList.toggle('active');
-  }
-});
-
 // Сброс стилей для таб и альт и вставка символов в пробел
 window.onkeydown = (e) => {
   if (e.code === 'Tab') {
@@ -114,3 +127,80 @@ window.onkeydown = (e) => {
     e.preventDefault();
   }
 }
+
+// Нажатие шифта
+let shiftChange
+function activeShift() {
+  STATUS.language === 'russianLetters'
+    ? (shiftChange = 'ruUpper')
+    : (shiftChange = 'enUpper');
+  GENERATOR_ARR.forEach((val, i) => {
+    val.forEach((el, index) => {
+      DOBLE_ARR[i][index].textContent = el[shiftChange];
+    });
+  });
+}
+
+function noActiveShift() {
+  STATUS.language === 'russianLetters'
+    ? (STATUS.language = 'russianLetters')
+    : (STATUS.language = 'englishLetters');
+  GENERATOR_ARR.forEach((val, i) => {
+    val.forEach((el, index) => {
+      DOBLE_ARR[i][index].textContent = el[STATUS.language];
+    });
+  });
+}
+
+// Нажатие КАПСА
+let сapsChange
+
+function activeCaps() {
+  STATUS.language === 'russianLetters' && STATUS.CapsLock === true
+    ? (сapsChange = 'ruUpper')
+    : (сapsChange = 'enUpper');
+  GENERATOR_ARR.forEach((val, i) => {
+    val.forEach((el, index) => {
+      DOBLE_ARR[i][index].textContent = el[сapsChange];
+    });
+  });
+}
+// верхий регистр при перезагрузке страницы
+function startCaps() {
+  if (STATUS.CapsLock === true) activeCaps()
+  else noActiveShift()
+}
+startCaps()
+
+// переключение языка и отслеживание шифта
+document.addEventListener('keydown', () => {
+  if (STATUS.AltLeft === true && STATUS.ControlLeft === true) changeFlag(); change()
+  if (STATUS.ShiftLeft === true || STATUS.ShiftRight === true) activeShift()
+  if (STATUS.CapsLock === true) activeCaps()
+})
+
+document.addEventListener('keyup', (e) => {
+  if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') {
+    if (STATUS.ShiftLeft === false || STATUS.ShiftRight === false) noActiveShift()
+  }
+})
+
+// Ввод склавиатуры
+document.addEventListener('keydown', (e) => {
+  e.preventDefault()
+  STATUS.cursor = AREA.selectionStart
+  const AREA_VALUE_OLD = AREA.value
+  let areaValueNew
+  const keySymbol = document.querySelector(`.${e.code.toLowerCase()}`).textContent
+  if (!FUNCTION_SYMBOL.includes(e.code)) {
+    areaValueNew = `${AREA_VALUE_OLD.slice(0, STATUS.cursor)}${keySymbol}${AREA_VALUE_OLD.slice(STATUS.cursor)}`
+    AREA.value = areaValueNew
+    STATUS.cursor++
+    AREA.setSelectionRange(STATUS.cursor, STATUS.cursor)
+    AREA.focus()
+  }
+})
+
+// input.addEventListener('change', (event) => {
+//   console.log(`Значение поля ввода изменено на: ${event.target.value}`);
+// });
