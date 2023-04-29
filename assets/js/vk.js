@@ -64,7 +64,7 @@ if (localStorage.getItem('language')) {
   STATUS.language = localStorage.getItem('language')
 }
 
-// блок состояний кнопок
+// блок состояний кнопок клавиатура
 document.addEventListener('keydown', (e) => {
   if (e.code === 'ShiftLeft') STATUS.ShiftLeft = true
   if (e.code === 'ShiftRight') STATUS.ShiftRight = true
@@ -79,6 +79,27 @@ document.addEventListener('keyup', (e) => {
   if (e.code === 'ShiftRight') STATUS.ShiftRight = false
   if (e.code === 'ControlLeft') STATUS.ControlLeft = false
   if (e.code === 'AltLeft') STATUS.AltLeft = false
+})
+
+// блок состояний кнопок мышь
+document.addEventListener('click', (e) => {
+  if (e.target.id === 'CapsLock') {
+    STATUS.CapsLock === true ? STATUS.CapsLock = false : STATUS.CapsLock = true
+  }
+})
+
+document.addEventListener('mousedown', (e) => {
+  if (e.target.id === 'ShiftLeft') STATUS.ShiftLeft = true
+  if (e.target.id === 'ShiftRight') STATUS.ShiftRight = true
+  if (e.target.id === 'ControlLeft') STATUS.ControlLeft = true
+  if (e.target.id === 'AltLeft') STATUS.AltLeft = true
+})
+
+document.addEventListener('mouseup', (e) => {
+  if (e.target.id === 'ShiftLeft') STATUS.ShiftLeft = false
+  if (e.target.id === 'ShiftRight') STATUS.ShiftRight = false
+  if (e.target.id === 'ControlLeft') STATUS.ControlLeft = false
+  if (e.target.id === 'AltLeft') STATUS.AltLeft = false
 })
 
 // генерация кнопок и присвоение класcов и id
@@ -154,7 +175,6 @@ function noActiveShift() {
 
 // Нажатие КАПСА
 let сapsChange
-
 function activeCaps() {
   STATUS.language === 'russianLetters' && STATUS.CapsLock === true
     ? (сapsChange = 'ruUpper')
@@ -165,6 +185,7 @@ function activeCaps() {
     });
   });
 }
+
 // верхий регистр при перезагрузке страницы
 function startCaps() {
   if (STATUS.CapsLock === true) activeCaps()
@@ -201,6 +222,31 @@ document.addEventListener('keydown', (e) => {
   }
 })
 
-// input.addEventListener('change', (event) => {
-//   console.log(`Значение поля ввода изменено на: ${event.target.value}`);
-// });
+document.addEventListener('click', (e) => {
+  STATUS.cursor = AREA.selectionStart
+  const AREA_VALUE_OLD = AREA.value
+  let areaValueNew;
+  let keySymbol;
+  if (e.target.id && e.target.classList.contains('key')) {
+    keySymbol = document.querySelector(`.${e.target.id.toLowerCase()}`).textContent
+    if (!FUNCTION_SYMBOL.includes(e.target.id)) {
+      areaValueNew = `${AREA_VALUE_OLD.slice(0, STATUS.cursor)}${keySymbol}${AREA_VALUE_OLD.slice(STATUS.cursor)}`
+      AREA.value = areaValueNew
+      STATUS.cursor++
+      AREA.setSelectionRange(STATUS.cursor, STATUS.cursor)
+      AREA.focus()
+    }
+  }
+})
+
+document.addEventListener('mousedown', () => {
+  if (STATUS.AltLeft === true && STATUS.ControlLeft === true) changeFlag(); change()
+  if (STATUS.ShiftLeft === true || STATUS.ShiftRight === true) activeShift()
+  if (STATUS.CapsLock === true) activeCaps()
+})
+
+document.addEventListener('mouseup', (e) => {
+  if (e.target.id === 'ShiftLeft' || e.target.id === 'ShiftRight') {
+    if (STATUS.ShiftLeft === false || STATUS.ShiftRight === false) noActiveShift()
+  }
+})
