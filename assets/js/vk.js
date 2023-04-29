@@ -6,7 +6,9 @@ import {
   GENERATOR_OBJ,
   GEN_KEYS_LENGTH,
   DOBLE_ARR,
-  FUNCTION_SYMBOL
+  FUNCTION_SYMBOL,
+  SHIFT_RU,
+  SHIFT_EN
 } from './arr.js';
 import { change, changeFlag } from './changeButton.js';
 import { Key } from './class.js';
@@ -107,7 +109,9 @@ for (let i = 0; i < EN_LAYOUT.length; i++) {
   const keys = EN_LAYOUT[i].map((englishLetters, j) => {
     const russianLetters = RU_LAYOUT[i][j];
     const keyCode = ALL_CODE[i][j];
-    const key = new Key(englishLetters, russianLetters, keyCode);
+    const shiftRu = SHIFT_RU[i][j];
+    const shiftEn = SHIFT_EN[i][j];
+    const key = new Key(englishLetters, russianLetters, keyCode, shiftRu, shiftEn);
     GENERATOR_OBJ[keyCode] = key;
     return key;
   });
@@ -128,23 +132,24 @@ change()
 
 // дабавление классов при нажатии клавиш
 document.addEventListener('keydown', (e) => {
-  if (e.code !== 'CapsLock') {
-    document.querySelector(`.${e.code.toLowerCase()}`).classList.add('active')
+  if (ALL_CODE.some((el) => el.includes(e.code))) {
+    if (e.code !== 'CapsLock') {
+      document.querySelector(`.${e.code.toLowerCase()}`).classList.add('active')
+    }
   }
 })
 
 document.addEventListener('keyup', (e) => {
-  if (e.code !== 'CapsLock') {
-    document.querySelector(`.${e.code.toLowerCase()}`).classList.remove('active')
+  if (ALL_CODE.some((el) => el.includes(e.code))) {
+    if (e.code !== 'CapsLock') {
+      document.querySelector(`.${e.code.toLowerCase()}`).classList.remove('active')
+    }
   }
 })
 
 // Сброс стилей для таб и альт и вставка символов в пробел
 window.onkeydown = (e) => {
-  if (e.code === 'Tab') {
-    e.preventDefault();
-    AREA.value += '    ';
-  } else if (e.code === 'AltLeft' || e.code === 'AltRight') {
+  if (e.code === 'AltLeft' || e.code === 'AltRight') {
     e.preventDefault();
   }
 }
@@ -153,14 +158,18 @@ window.onkeydown = (e) => {
 let shiftChange
 function activeShift() {
   STATUS.language === 'russianLetters'
-    ? (shiftChange = 'ruUpper')
-    : (shiftChange = 'enUpper');
+    ? (shiftChange = 'shiftRu')
+    : (shiftChange = 'shiftEn');
   GENERATOR_ARR.forEach((val, i) => {
     val.forEach((el, index) => {
       DOBLE_ARR[i][index].textContent = el[shiftChange];
     });
   });
 }
+
+GENERATOR_ARR.forEach((el) => {
+ console.log(el)
+})
 
 function noActiveShift() {
   STATUS.language === 'russianLetters'
@@ -194,10 +203,17 @@ function startCaps() {
 startCaps()
 
 // переключение языка и отслеживание шифта
-document.addEventListener('keydown', () => {
-  if (STATUS.AltLeft === true && STATUS.ControlLeft === true) changeFlag(); change()
-  if (STATUS.ShiftLeft === true || STATUS.ShiftRight === true) activeShift()
-  if (STATUS.CapsLock === true) activeCaps()
+document.addEventListener('keydown', (e) => {
+  if (ALL_CODE.some((el) => el.includes(e.code))) {
+    if (STATUS.AltLeft === true && STATUS.ControlLeft === true) changeFlag(); change()
+    if (STATUS.ShiftLeft === true || STATUS.ShiftRight === true) activeShift()
+  }
+})
+
+document.addEventListener('keydown', (e) => {
+  if (ALL_CODE.some((el) => el.includes(e.code))) {
+    if (STATUS.CapsLock === true) activeCaps()
+  }
 })
 
 document.addEventListener('keyup', (e) => {
@@ -208,18 +224,46 @@ document.addEventListener('keyup', (e) => {
 
 // Ввод склавиатуры
 document.addEventListener('keydown', (e) => {
-  e.preventDefault()
-  STATUS.cursor = AREA.selectionStart
-  const AREA_VALUE_OLD = AREA.value
-  let areaValueNew
-  const keySymbol = document.querySelector(`.${e.code.toLowerCase()}`).textContent
-  if (!FUNCTION_SYMBOL.includes(e.code)) {
-    areaValueNew = `${AREA_VALUE_OLD.slice(0, STATUS.cursor)}${keySymbol}${AREA_VALUE_OLD.slice(STATUS.cursor)}`
-    AREA.value = areaValueNew
-    STATUS.cursor++
-    AREA.setSelectionRange(STATUS.cursor, STATUS.cursor)
-    AREA.focus()
-  }
+  if (ALL_CODE.some((el) => el.includes(e.code))) {
+    e.preventDefault()
+    STATUS.cursor = AREA.selectionStart
+    const AREA_VALUE_OLD = AREA.value
+    let areaValueNew = ''
+    const keySymbol = document.querySelector(`.${e.code.toLowerCase()}`).textContent
+    if (!FUNCTION_SYMBOL.includes(e.code)) {
+      areaValueNew = `${AREA_VALUE_OLD.slice(0, STATUS.cursor)}${keySymbol}${AREA_VALUE_OLD.slice(STATUS.cursor)}`
+      AREA.value = areaValueNew
+      STATUS.cursor++
+      AREA.setSelectionRange(STATUS.cursor, STATUS.cursor)
+      AREA.focus()
+    }
+    if (e.code === 'Enter') {
+      const ENTER = '\n'
+      areaValueNew = `${AREA_VALUE_OLD.slice(0, STATUS.cursor)}${ENTER}${AREA_VALUE_OLD.slice(STATUS.cursor)}`
+      AREA.value = areaValueNew
+      STATUS.cursor++
+      AREA.setSelectionRange(STATUS.cursor, STATUS.cursor)
+      AREA.focus()
+    }
+    if (e.code === 'Backspace') {
+      console.log(e.code)
+      if (STATUS.cursor !== 0) {
+        areaValueNew = `${AREA_VALUE_OLD.slice(0, STATUS.cursor - 1)}${AREA_VALUE_OLD.slice(STATUS.cursor)}`
+      }
+      AREA.value = areaValueNew
+      STATUS.cursor--
+      AREA.setSelectionRange(STATUS.cursor, STATUS.cursor)
+      AREA.focus()
+    }
+    if (e.code === 'Delete') {
+      console.log(e.code)
+      areaValueNew = `${AREA_VALUE_OLD.slice(0, STATUS.cursor)}${AREA_VALUE_OLD.slice(STATUS.cursor + 1)}`
+      AREA.value = areaValueNew
+      STATUS.cursor
+      AREA.setSelectionRange(STATUS.cursor, STATUS.cursor)
+      AREA.focus()
+    }
+}
 })
 
 document.addEventListener('click', (e) => {
@@ -231,6 +275,22 @@ document.addEventListener('click', (e) => {
     keySymbol = document.querySelector(`.${e.target.id.toLowerCase()}`).textContent
     if (!FUNCTION_SYMBOL.includes(e.target.id)) {
       areaValueNew = `${AREA_VALUE_OLD.slice(0, STATUS.cursor)}${keySymbol}${AREA_VALUE_OLD.slice(STATUS.cursor)}`
+      AREA.value = areaValueNew
+      STATUS.cursor++
+      AREA.setSelectionRange(STATUS.cursor, STATUS.cursor)
+      AREA.focus()
+    }
+    if (e.target.id === 'Enter') {
+      const ENTER = '\n'
+      areaValueNew = `${AREA_VALUE_OLD.slice(0, STATUS.cursor)}${ENTER}${AREA_VALUE_OLD.slice(STATUS.cursor)}`
+      AREA.value = areaValueNew
+      STATUS.cursor++
+      AREA.setSelectionRange(STATUS.cursor, STATUS.cursor)
+      AREA.focus()
+    }
+    if (e.target.id === 'Tab') {
+      const tab = '    '
+      areaValueNew = `${AREA_VALUE_OLD.slice(0, STATUS.cursor)}${tab}${AREA_VALUE_OLD.slice(STATUS.cursor)}`
       AREA.value = areaValueNew
       STATUS.cursor++
       AREA.setSelectionRange(STATUS.cursor, STATUS.cursor)
