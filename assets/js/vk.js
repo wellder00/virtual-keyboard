@@ -278,7 +278,7 @@ document.addEventListener('keydown', (e) => {
       const tab = '    '
       areaValueNew = `${AREA_VALUE_OLD.slice(0, STATUS.cursor)}${tab}${AREA_VALUE_OLD.slice(STATUS.cursor)}`
       AREA.value = areaValueNew
-      STATUS.cursor
+      STATUS.cursor += 4
       AREA.setSelectionRange(STATUS.cursor, STATUS.cursor)
       AREA.focus()
     }
