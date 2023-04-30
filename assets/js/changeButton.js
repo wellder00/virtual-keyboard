@@ -7,10 +7,23 @@ export function changeFlag() {
     : (STATUS.language = 'russianLetters');
 }
 
+let сapsChange
 export function change() {
-  GENERATOR_ARR.forEach((val, i) => {
-    val.forEach((el, index) => {
-      DOBLE_ARR[i][index].textContent = el[STATUS.language];
+  if (STATUS.CapsLock === true) {
+    STATUS.language === 'russianLetters'
+      ? (сapsChange = 'ruUpper')
+      : (сapsChange = 'enUpper');
+    document.querySelector('#CapsLock').classList.add('active')
+    GENERATOR_ARR.forEach((val, i) => {
+      val.forEach((el, index) => {
+        DOBLE_ARR[i][index].textContent = el[сapsChange];
+      });
     });
-  });
+  } else {
+    GENERATOR_ARR.forEach((val, i) => {
+      val.forEach((el, index) => {
+        DOBLE_ARR[i][index].textContent = el[STATUS.language];
+      });
+    });
+  }
 }

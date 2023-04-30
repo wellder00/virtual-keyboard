@@ -54,11 +54,11 @@ export const STATUS = {
 }
 
 // eslint-disable-next-line no-undef
-if (localStorage.getItem('capsLock')) {
-  STATUS.CapsLock = JSON.parse(localStorage.getItem('capsLock'))
-}
+// if (localStorage.getItem('capsLock')) {
+//   STATUS.CapsLock = JSON.parse(localStorage.getItem('capsLock'))
+// }
 window.onbeforeunload = () => {
-  localStorage.setItem('capsLock', STATUS.CapsLock)
+  // localStorage.setItem('capsLock', STATUS.CapsLock)
   localStorage.setItem('language', STATUS.language)
 }
 
@@ -232,7 +232,9 @@ function activeCaps() {
 // переключение языка и отслеживание шифта
 document.addEventListener('keydown', (e) => {
   if (ALL_CODE.some((el) => el.includes(e.code))) {
-    if (STATUS.AltLeft === true && STATUS.ControlLeft === true) changeFlag(); change()
+    if (e.code === 'AltLeft' || e.code === 'ControlLeft') {
+      if (STATUS.AltLeft === true && STATUS.ControlLeft === true) changeFlag(); change()
+    }
     if (STATUS.ShiftLeft === true || STATUS.ShiftRight === true) activeShift()
   }
 })
