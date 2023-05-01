@@ -119,7 +119,6 @@ for (let i = 0; i < EN_LAYOUT.length; i++) {
 
 // запись смены языка
 change()
-
 // дабавление классов при нажатии клавиш
 document.addEventListener('keydown', (e) => {
   if (ALL_CODE.some((el) => el.includes(e.code))) {
